@@ -6,9 +6,9 @@ name: Firebase App Distribution CI
 on:
   push:
     branches:
-      - release*
       - master
       - develop
+      - release*
       
 # Um workflow é composto de um ou mais Jobs que podem ser executados sequencialmente ou em paralelo
 jobs:
