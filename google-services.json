@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "378867644909",
+    "project_id": "fir-app-auto-distribution",
+    "storage_bucket": "fir-app-auto-distribution.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:378867644909:android:cd45731ffe297f0baccfe4",
+        "android_client_info": {
+          "package_name": "com.example.demoautoappdistribution"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "378867644909-ns6naupqm6dk6e31rm9m9gn5qd4o0gh4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABud_BEqa19yq7F5_U3RDDgroKdpVTjd0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "378867644909-ns6naupqm6dk6e31rm9m9gn5qd4o0gh4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
