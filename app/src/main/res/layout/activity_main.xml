@@ -21,4 +21,10 @@
         android:layout_margin="50dp"
         android:text="My name is Blabla" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="50dp"
+        android:text="I'm 20 years old" />
+
 </LinearLayout>
