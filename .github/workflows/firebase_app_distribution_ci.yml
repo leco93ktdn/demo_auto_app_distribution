@@ -5,9 +5,9 @@ name: Firebase App Distribution CI
 # Controls when the workflow will run
 on:
   push:
-    branches:
-    - develop
-    - release*
+    branches: [develop]
+  pull_request:
+    branches: [develop]
       
 # Um workflow é composto de um ou mais Jobs que podem ser executados sequencialmente ou em paralelo
 jobs:
