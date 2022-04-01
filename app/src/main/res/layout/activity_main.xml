@@ -24,6 +24,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="50dp"
-        android:text="I'm 3 years old" />
+        android:text="I'm 54 years old" />
 
 </LinearLayout>
