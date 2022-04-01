@@ -16,9 +16,7 @@ jobs:
   test:
     name: Run Unit Tests
     # O tipo de runner em que o job será executado
-    runs-on: ubuntu-latest  
-    before_install:
-    - chmod +x gradlew
+    runs-on: ubuntu-latest
     # Steps representam a sequencia de tarefas usando o shell runners que serão executadas como parte do Job
     steps:
     - uses: actions/checkout@v1
