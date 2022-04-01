@@ -6,13 +6,14 @@ name: Firebase App Distribution CI
 on:
   push:
     branches:
-    - 'develop'
-    - 'release*'
+    - develop
+    - release*
       
 # Um workflow é composto de um ou mais Jobs que podem ser executados sequencialmente ou em paralelo
 jobs:
     # Este Workflow contém dois Jobs chamados "test" e "build-and-deploy"
   test:
+    if: github.ref_name == 'develop'
     name: Run Unit Tests
     # O tipo de runner em que o job será executado
     runs-on: ubuntu-latest
