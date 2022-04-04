@@ -23,21 +23,24 @@ jobs:
     # Step para Instalar o NDK
     - name: Install NDK
       run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;20.0.5594570"
+
     - name: build release apk
-      run: ./gradlew assembleRelease
+      run: ./gradlew assembleStgRelease
+
     - name: Sign APK
-      id: sign_app
+      id: sign_apk
       uses: r0adkll/sign-android-release@v1
       with:
-        releaseDirectory: app/build/outputs/apk/release
+        releaseDirectory: app/build/outputs/apk/stg/release
         signingKeyBase64: ${{ secrets.SIGNINGKEYBASE64 }}
         alias: ${{ secrets.KEY_ALIAS }}
         keyStorePassword: ${{ secrets.STORE_PASSWORD }}
         keyPassword: ${{ secrets.KEY_PASSWORD }}
+
     - name: upload artifact to Firebase App Distribution
       uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
       with:
         appId: ${{ secrets.FIREBASE_APP_ID }}
         token: ${{ secrets.FIREBASE_TOKEN }}
         groups: testers
-        path: ${{steps.sign_app.outputs.signedReleaseFile}}
+        file: ${{steps.sign_apk.outputs.signedReleaseFile}}
