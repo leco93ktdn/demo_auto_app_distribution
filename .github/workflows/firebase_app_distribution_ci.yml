@@ -27,7 +27,7 @@ jobs:
       run: ./gradlew assembleStgRelease
     - name: Sign APK
       id: sign_apk
-      uses: r0adkll/sign-android-release@v1
+      uses: r0adkll/sign-android-stg-release@v1
       with:
         signingKeyBase64: ${{ secrets.SIGNINGKEYBASE64 }}
         alias: ${{ secrets.KEY_ALIAS }}
