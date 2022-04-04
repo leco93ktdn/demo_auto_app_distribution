@@ -24,11 +24,12 @@ jobs:
     - name: Install NDK
       run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;20.0.5594570"
     - name: build release apk
-      run: ./gradlew assembleStgRelease
-    - name: Sign APK
-      id: sign_apk
+      run: ./gradlew bundleStgRelease
+    - name: Sign AAB
+      id: sign_aab
       uses: r0adkll/sign-android-release@v1
       with:
+        releaseDirectory: app/build/outputs/bundle/stg/release
         signingKeyBase64: ${{ secrets.SIGNINGKEYBASE64 }}
         alias: ${{ secrets.KEY_ALIAS }}
         keyStorePassword: ${{ secrets.STORE_PASSWORD }}
@@ -39,4 +40,4 @@ jobs:
         appId: ${{ secrets.FIREBASE_APP_ID }}
         token: ${{ secrets.FIREBASE_TOKEN }}
         groups: testers
-        file: app/build/outputs/apk/stg/release/app-stg-release.apk
+        file: app/build/outputs/bundle/stg/release/app-stg-release.aab
