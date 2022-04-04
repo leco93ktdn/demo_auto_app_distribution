@@ -16,6 +16,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
+
         create("release") {
             // You need to specify either an absolute path or include the
             // keystore file in the same directory as the build.gradle file.
@@ -29,6 +30,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
