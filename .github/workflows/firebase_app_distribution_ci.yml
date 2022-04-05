@@ -5,42 +5,78 @@ name: Firebase App Distribution CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: 
-     - "release/**"
+    branches:
+      - "release/**"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-  
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: set up JDK 11
-      uses: actions/setup-java@v1
-      with:
-        java-version: 11       
-    # Step para Instalar o NDK
-    - name: Install NDK
-      run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;20.0.5594570"
+      - name: Send release start notification to slack
+        uses: slackapi/slack-github-action@v1.16.0
+        with:
+          payload: |
+            {
+            "text": "Start staging release from ${{ github.ref_name }} branch\n\n-author: ${{ github.event.sender.login }} \n-repo_name: ${{ github.event.repository.full_name }} \n-url: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+            }
+        env:
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_3 }}
 
-    - name: build release apk
-      run: ./gradlew assembleStgRelease
+      - uses: actions/checkout@v1
 
-    - name: Sign APK
-      id: sign_apk
-      uses: r0adkll/sign-android-release@v1
-      with:
-        releaseDirectory: app/build/outputs/apk/stg/release
-        signingKeyBase64: ${{ secrets.SIGNINGKEYBASE64 }}
-        alias: ${{ secrets.KEY_ALIAS }}
-        keyStorePassword: ${{ secrets.STORE_PASSWORD }}
-        keyPassword: ${{ secrets.KEY_PASSWORD }}
+      - name: set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
 
-    - name: upload artifact to Firebase App Distribution
-      uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
-      with:
-        appId: ${{ secrets.FIREBASE_APP_ID }}
-        token: ${{ secrets.FIREBASE_TOKEN }}
-        groups: testers
-        file: ${{steps.sign_apk.outputs.signedReleaseFile}}
+      # Step para Instalar o NDK
+      - name: Install NDK
+        run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;20.0.5594570"
+
+      - name: build release apk
+        id: build_apk
+        run: ./gradlew assembleStgRelease
+      - name: Sign APK
+        id: sign_apk
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/stg/release
+          signingKeyBase64: ${{ secrets.BASE64_DEBUG_SIGNING_KEY }}
+          alias: ${{ secrets.DEBUG_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+      - name: upload artifact to Firebase App Distribution
+        id: deploy
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testers
+          file: ${{steps.sign_apk.outputs.signedReleaseFile}}
+
+      - name: Send build apk success message to Slack workflow
+        if: success()
+        uses: slackapi/slack-github-action@v1.16.0
+        with:
+          payload: |
+            {
+            "text": "github action deploy is ${{ job.status }}"
+            }
+        env:
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_3 }}
+      - name: Send build apk failure message to Slack workflow
+        if: failure()
+        uses: slackapi/slack-github-action@v1.16.0
+        with:
+          payload: |
+            {
+            "text": "github action deploy is ${{ job.status }}"
+            }
+        env:
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_3 }}
