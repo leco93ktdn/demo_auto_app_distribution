@@ -16,28 +16,60 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: set up JDK 11
-      uses: actions/setup-java@v1
+    - name: Send GitHub Action trigger data to Slack workflow
+      id: slack
+      uses: slackapi/slack-github-action@v1.16.0
       with:
-        java-version: 11       
-    # Step para Instalar o NDK
-    - name: Install NDK
-      run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;20.0.5594570"
-    - name: build release apk
-      run: ./gradlew assembleStgRelease
-    - name: Sign APK
-      id: sign_app
-      uses: r0adkll/sign-android-release@v1
-      with:
-        releaseDirectory: app/build/outputs/apk/stg/release
-        signingKeyBase64: ${{ secrets.SIGNINGKEYBASE64 }}
-        alias: ${{ secrets.KEY_ALIAS }}
-        keyStorePassword: ${{ secrets.STORE_PASSWORD }}
-        keyPassword: ${{ secrets.KEY_PASSWORD }}
-    - name: upload artifact to Firebase App Distribution
-      uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
-      with:
-        appId: ${{ secrets.FIREBASE_APP_ID }}
-        token: ${{ secrets.FIREBASE_TOKEN }}
-        groups: testers
-        path: ${{steps.sign_app.outputs.signedReleaseFile}}
+        payload: |
+          {
+            "text": "1-:github: ビルド結果: ${{ job.status }}\n\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "2-:github: ビルド結果: ${{ job.status }}\n\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                }
+              },
+              {
+                "type": "context",
+                "elements": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "Author: <https://github.com/${{ github.event.sender.login }}|@${{ github.event.sender.login }}>"
+                  }
+                ]
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#    - name: set up JDK 11
+#      uses: actions/setup-java@v1
+#      with:
+#        java-version: 11
+#    # Step para Instalar o NDK
+#    - name: Install NDK
+#      run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;20.0.5594570"
+#
+#    - name: build release apk
+#      run: ./gradlew assembleStgRelease
+#
+#    - name: Sign APK
+#      id: sign_apk
+#      uses: r0adkll/sign-android-release@v1
+#      with:
+#        releaseDirectory: app/build/outputs/apk/stg/release
+#        signingKeyBase64: ${{ secrets.BASE64_DEBUG_SIGNING_KEY }}
+#        alias: ${{ secrets.DEBUG_KEY_ALIAS }}
+#        keyStorePassword: ${{ secrets.STORE_PASSWORD }}
+#        keyPassword: ${{ secrets.KEY_PASSWORD }}
+#
+#    - name: upload artifact to Firebase App Distribution
+#      uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
+#      with:
+#        appId: ${{ secrets.FIREBASE_APP_ID }}
+#        token: ${{ secrets.FIREBASE_TOKEN }}
+#        groups: testers
+#        file: ${{steps.sign_apk.outputs.signedReleaseFile}}
